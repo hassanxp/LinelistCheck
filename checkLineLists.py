@@ -1,6 +1,6 @@
 import re
 import numpy as np
-
+import os
 
 def readLineList(filename, erin=True):
 
@@ -58,17 +58,24 @@ def toVacuum(lam_air):
 
 
 def main():
-    wavelength_ref, _ = readLineList(r'/Users/hassans/PFS/visualStudioCode/obs_pfs/pfs/lineLists/Ar.txt',
-                                     erin=False)
-    wavelength_air, _ = readLineList(r'/Users/hassans/Downloads/new_Ar_linemeas.csv',
-                                     erin=True)
-    for w in wavelength_air:
-        w_air = float(w)
-        w_vac = toVacuum(w_air)
-        closest_match = orderMatches(w_vac, wavelength_ref)[0]
-        diff = abs(closest_match-w_vac)
-        print(f'wavelength_air={w_air}, wavelength_vac={w_vac}, '
-              f'matches={closest_match}, diff={diff}')
+    ref_linelist_dir = r'/Users/hassans/PFS/visualStudioCode/obs_pfs/pfs/lineLists'
+    pfilamp_linelist_dir = r'/Users/hassans/Downloads'
+
+    for lamp in ['Ar', 'Kr', 'Ne', 'Xe']:
+        print(f'Lamp: {lamp}-------------')
+        wavelength_ref, _ = readLineList(os.path.join(ref_linelist_dir,
+                                                      f'{lamp}.txt'),
+                                         erin=False)
+        wavelength_air, _ = readLineList(os.path.join(pfilamp_linelist_dir,
+                                                      f'new_{lamp}_linemeas.csv'),
+                                         erin=True)
+        for w in wavelength_air:
+            w_air = float(w)
+            w_vac = toVacuum(w_air)
+            closest_match = orderMatches(w_vac, wavelength_ref)[0]
+            diff = abs(closest_match-w_vac)
+            print(f'wavelength_air={w_air}, wavelength_vac={w_vac}, '
+                  f'matches={closest_match}, diff={diff}')
 
 
 if __name__ == "__main__":

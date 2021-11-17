@@ -54,7 +54,7 @@ def readLineList(filename, erin=True):
 
 
 def main():
-    pfilamp_linelist_dir = r'/Users/hassans/Downloads'
+    pfilamp_linelist_dir = r'./data'
 
     lamp = 'HgCd'
 
@@ -63,15 +63,18 @@ def main():
                                              erin=True)
 
     linelist = []
-    for w in wavelength_air:
-        w_vac = toVacuum(float(w))
-        refLine = ReferenceLine(lamp, w_vac, intensity,
+    for w, ii in zip(wavelength_air, intensity):
+        w_air = float(w)
+        w_vac = toVacuum(w_air)
+        print(f'w_air: {w_air} w_vac: {w_vac}')
+        refLine = ReferenceLine(lamp, w_vac, ii,
                                 ReferenceLineStatus.GOOD)
         linelist.append(refLine)
 
-        outFile = f'{lamp}.txt'
-        ReferenceLineSet(linelist).writeLineList(outFile)
-        print(f'Written linelist to {outFile}.')
+    lineListSorted = sorted(linelist, key=lambda refLine: refLine.wavelength)
+    outFile = f'{lamp}.txt'
+    ReferenceLineSet(lineListSorted).writeLineList(outFile)
+    print(f'Written linelist to {outFile}.')
 
 
 if __name__ == "__main__":

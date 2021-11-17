@@ -1,0 +1,37 @@
+# Columns:
+# 1: wavelength (nm)
+# 2: intensity (arbitrary units)
+# 3: description (ionic species)
+# 4: status (bitmask)
+#
+# Status bitmask elements:
+# GOOD=0: Line is good
+# NOT_VISIBLE=1: Line is not typically visible in PFS (maybe too faint)
+# BLEND=2: Line is blended with other line(s)
+# SUSPECT=4: Line is of suspect quality
+# REJECTED=8: Line has been rejected from use in PFS
+# BROAD=16: Line is broader than normal
+#
+404.79973         1784.66    HgCd         0
+433.99863          448.00    HgCd         0
+434.87370        10122.30    HgCd         0
+435.92403        13645.63    HgCd         0
+467.89927        12465.30    HgCd         0
+480.16042        24708.31    HgCd         0
+508.73270        47790.64    HgCd         0
+533.91844           19.10    HgCd         0
+546.25666        79925.82    HgCd         0
+567.82983           29.30    HgCd         0
+577.14875        13048.99    HgCd         0
+579.18956        12501.58    HgCd         0
+589.03539           14.18    HgCd         0
+635.65509           20.27    HgCd         0
+636.18419           19.80    HgCd         0
+644.02689         4020.82    HgCd         0
+644.02689         8831.00    HgCd         0
+708.36632           18.39    HgCd         0
+708.36632           14.13    HgCd         0
+734.76646          202.24    HgCd         0
+734.76646          166.24    HgCd         0
+734.85233          228.57    HgCd         0
+734.85233          187.97    HgCd         0

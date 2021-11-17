@@ -48,3 +48,7 @@ def readLineList(filename, erin=True):
             wavelengthArr.append(wavelength)
             intensityArr.append(intensity)
     return wavelengthArr, intensityArr
+
+def createLineList():
+
+    

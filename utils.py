@@ -58,6 +58,7 @@ def readLineList(filename, erin=True):
     wavelengthArr = []
     intensityArr = []
     speciesArr = []
+    statusArr = []
     with open(filename) as fd:
         for ii, line in enumerate(fd):
             if erin and ii == 0:
@@ -72,10 +73,12 @@ def readLineList(filename, erin=True):
                     wavelength = fields[1]
                     intensity = fields[2]
                     species = 'UNKNOWN'
+                    status = 0
                 else:
-                    wavelength = fields[0]
-                    intensity = fields[1]
+                    wavelength = float(fields[0])
+                    intensity = float(fields[1])
                     species = fields[2]
+                    status = int(fields[3])
 
             except Exception as ex:
                 raise RuntimeError(f"Unable to parse line {ii} of {filename}: {ex}")
@@ -88,25 +91,29 @@ def readLineList(filename, erin=True):
             wavelengthArr.append(wavelength)
             intensityArr.append(intensity)
             speciesArr.append(species)
-    return wavelengthArr, intensityArr, speciesArr
+            statusArr.append(status)
+    return wavelengthArr, intensityArr, speciesArr, statusArr
 
 
-def generateAirLineList(filename, erin=True):
-    wavelength_air, intensity, species = readLineList(filename,
-                                                      erin=erin)
+def generateAirLineList(filename, outFile, lambdaNm=True, erin=True):
+    wavelength_air, intensity, species, status = readLineList(filename,
+                                                              erin=erin)
     linelist = []
-    for w, ii, sp in zip(wavelength_air, intensity, species):
-        w_air = float(w)
+    for w, ii, sp, st in zip(wavelength_air, intensity, species, status):
+
+        if lambdaNm is False:
+            # convert wavelengths from angstroms to nm
+            w_air = float(w)/10.0
+        else:
+            w_air = float(w)
+
         w_vac = toVacuum(w_air)
         print(f'w_air: {w_air} w_vac: {w_vac}')
-        refLine = ReferenceLine(sp, w_vac, ii,
-                                ReferenceLineStatus.GOOD)
+        refLine = ReferenceLine(sp, w_vac, ii, st)
         linelist.append(refLine)
 
     lineListSorted = sorted(linelist, key=lambda refLine: refLine.wavelength)
 
-    outFile = 'out.txt'
     df = referenceLineSetToDataFrame(lineListSorted)
     rls = ReferenceLineSet(df)
     rls.writeLineList(outFile)
-    print(f'Written linelist to {outFile}.')

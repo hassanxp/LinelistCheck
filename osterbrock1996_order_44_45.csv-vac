@@ -1,0 +1,81 @@
+# Columns:
+# 1: wavelength (nm)
+# 2: intensity (arbitrary units)
+# 3: description (ionic species)
+# 4: status (bitmask)
+#
+# Status bitmask elements:
+# GOOD=0: Line is good
+# NOT_VISIBLE=1: Line is not typically visible in PFS (maybe too faint)
+# BLEND=2: Line is blended with other line(s)
+# SUSPECT=4: Line is of suspect quality
+# REJECTED=8: Line has been rejected from use in PFS
+# BROAD=16: Line is broader than normal
+# DETECTORMAP_USED=32: Used for fitting detectorMap
+# DETECTORMAP_RESERVED=64: Reserved during fitting detectorMap
+# SKYSUB_USED=128: Used for 2d sky subtraction
+#
+782.36353            1.00    OH           0
+784.34037            0.30    OH           0
+785.12868            0.10    OH           2
+785.18650            0.10    OH           2
+785.26662            0.05    OH           2
+785.44487            0.05    OH           2
+785.53729            0.50    OH           0
+785.56290            0.50    OH           0
+785.57450            0.50    OH           2
+786.01362            0.10    OH           2
+786.28009            0.40    OH           2
+786.28730            0.50    OH           2
+786.98749            0.20    OH           2
+788.09309            0.15    OH           2
+788.38307            0.20    OH           2
+789.18149            0.30    OH           0
+789.21890            0.30    OH           0
+791.44090            0.10    OH           0
+791.58654            0.80    OH           2
+792.03656            0.01    OH           0
+792.06497            0.25    OH           0
+792.32034            0.20    OH           0
+792.32794            0.20    OH           0
+793.30301            0.20    OH           0
+793.35412            0.20    OH           0
+793.37043            0.20    OH           0
+793.41564            0.10    OH           0
+794.75510            0.05    OH           0
+794.83643            0.05    OH           0
+795.13711            0.20    OH           2
+796.68213            0.50    OH           2
+797.01962            0.05    OH           0
+797.02012            0.05    OH           0
+797.11585            0.05    OH           0
+797.98248            0.05    OH           0
+798.19434            0.20    OH           2
+799.55111            0.30    OH           0
+801.62438            0.15    OH           2
+801.62438            0.80    OH           2
+802.22104            0.10    OH           0
+802.25475            0.10    OH           0
+802.78559            1.00    OH           0
+802.81400            1.00    OH           0
+803.03576            0.10    OH           0
+803.11898            0.10    OH           0
+805.42151            0.40    OH           0
+806.41768            0.60    OH           0
+806.45749            0.60    OH           0
+807.93490            0.05    OH           0
+807.98151            0.05    OH           0
+808.67860            0.05    OH           0
+808.78043            0.10    OH           0
+809.57854            0.10    OH           0
+809.59865            0.10    OH           0
+810.44478            0.20    OH           0
+810.59702            0.20    OH           0
+814.11808            0.05    OH           0
+814.14829            0.05    OH           0
+814.87289            0.10    OH           0
+815.03833            0.10    OH           0
+819.04482            0.05    OH           0
+819.08624            0.05    OH           0
+819.70831            0.05    OH           0
+819.78793            0.05    OH           0

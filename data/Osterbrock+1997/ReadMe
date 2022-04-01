@@ -1,0 +1,128 @@
+III/211             Keck/HIRES Sky Line Atlas               (Osterbrock+ 1997)
+================================================================================
+Night-sky high-resolution spectral atlas of OH and O2 emission lines for
+echelle spectrograph wavelength calibration.
+     Osterbrock D.E., Fulbright J.P., Martel A.R., Keane M.J.,
+     Trager S.C., Basri G.
+    <Publ. Astron. Soc. Pacific 108, 277 (1996)>
+    =1996PASP..108..277O
+Night-sky high-resolution spectral atlas of OH emission lines for
+echelle spectrograph wavelength calibration. II.
+     Osterbrock D.E., Fulbright J.P., Bida T.A.
+    <Publ. Astron. Soc. Pacific 109, 614 (1997)>
+    =1997PASP..109..614O
+================================================================================
+ADC_Keywords: Spectroscopy ; Atlases
+
+Description:
+    This  catalog provides a list of atmospheric  OH and O2 lines that are
+    useful  for wavelength calibration of high resolution spectra.  Tables
+    of observed OH lines,  and calculated wavelengths for molecular oxygen
+    (O2)  are  given;  the  journal of  the observations  is found  in the
+    "Tables 1"  section below,  and  spectra  with  identified  lines  are
+    provided as postscript figures, which are summarized in the "figs.dat"
+    file.
+
+Introduction (from Paper 1):
+    The data are long  exposure  spectra  taken  with  the  Keck  10-meter
+    telescope high-resolution echelle spectrograph.  The current CCD's are
+    not  large enough to cover the whole spectrum in a single exposure but
+    by using two settings of the echelle, "left" (L) and "right"  (R),  it
+    is  possible to do so,  with an  overlap in the middle.  The night-sky
+    spectrum was subtracted  from  each  exposure,   and  these  pairs  of
+    exposures  were  combined  to  get  maximum  spectral  coverage.   The
+    resulting  night-sky spectrum extends from 385.6  nm (in order 92)  to
+    1199  nm (in order 30).  The resolution chosen was 0.02 nm at 700.0 nm
+    with a dispersion  at the CCD  of 0.005 nm/pixel.   The wavelength was
+    calibrated  on each exposure by the OH lines themselves.  Note that on
+    orders 61  and 64 the atomic lines  of O I 557.7 nm  and Na I 589.0 nm
+    are  so strong that  the OH lines  would not be  visible with standard
+    scaling.  Night-sky lines are visible in the spectra only longwards of
+    520.0 nm. No night-sky features were seen in order 62, 65, 66, and 67.
+    The wavelength from the laboratory measurements published by Abrams et
+    al (1994ApJS...93..351A)  were used.  Those are accurate to 10^-6^  nm
+    (1fm). The spectroscopic notation used is different from that found in
+    earlier astronomical  literature.  The  notation follows  the standard
+    spectroscopic  notation described by Hertzberg  (1950).  The reader is
+    referred for details to the source reference.
+
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName    Lrecl    Records    Explanations
+--------------------------------------------------------------------------------
+ReadMe          80          .    This file
+oh.dat          23        969    Observed OH lines (from papers 1 and 2)
+o2.dat          15         45    Computed O2 lines (table 3 of Paper 1)
+figs.dat        24         36    List of figures (spectra)
+figs/*           .         36    The 36 postscript figures (spectra)
+--------------------------------------------------------------------------------
+
+See also:
+  http://ucowww.ucsc.edu/~jfulb/OH.html : the original data distribution
+
+Byte-by-byte Description of file: oh.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label     Explanations
+--------------------------------------------------------------------------------
+   1-  9  F9.3  0.1nm   lambda    Wavelength of observed OH line
+      11  I1    ---     nu'       Lower transition number
+      12  A1    ---     ---       [-]
+      13  I1    ---     nu"       Upper transition number
+  15- 23  A9    ---     Trans     OH line Transition
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: o2.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label     Explanations
+--------------------------------------------------------------------------------
+   1-  8  F8.2  0.1nm   lambda    ? Computed wavelength of O2 line
+  10- 15  A6    ---     Trans     O2 line Transition
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: figs.dat
+--------------------------------------------------------------------------------
+  Bytes Format Units   Label     Explanations
+--------------------------------------------------------------------------------
+   1-12  A12   ---     PSfile    Name of  spectrum file in subdirectory figs
+  14-18  I5    0.1nm   lambda1   Lower wavelength representation
+  20-24  I5    0.1nm   lambda2   Upper wavelength representation
+--------------------------------------------------------------------------------
+
+Tables 1: Journal of the observations
+ -------------------------------------------------------------------------------
+                     Date      UT   Orders   lambda   Exp   RA (1950) DE   z  Az
+                                             0.1nm    min                 deg
+ -------------------------------------------------------------------------------
+
+ Vogt/Keane     (L) 1994-10-09 12:10 92-57  3865--6305  90  02:07 -00:19  26 184
+    (right)     (R) 1994-10-09 14:28 92-57  3865--6305  90  02:07 -00:19  44 238
+
+ Vogt/Churchill     1995-01-24 14:51 82-53  4320--6760  30  12:13 -00:17  22 199
+
+ Basri    Left  (L) 1994-11-23 07:18 55-41  6388--8730  60  01:25 +27:50  80  32
+ Basri   Right  (R) 1995-03-12 06:23 55-41  6388--8730  60  03:45 +23:30  49  76
+
+ Sargent/Barlow (L) 1995-02-23 09:27 54-40  6510--8995  50  12:03 -07:26  50 120
+                (R) 1995-02-23 12:12 54-40  6510--8995  50  12:03 -07:26  28 178
+
+ Bida           (L) 1996-01-11 05:52 36-47  7476-10035  25  00:25 +04:47  39 250
+                (R) 1995-09-10 10:18 36-47  7476-10035  20  00:52 +45:00  33  13
+
+ Bida           (L) 1996-01-11 06:14 30-36  9760-11990  15  00:25 +04:47  44 255
+                (R) 1996-01-11 06:30 30-36  9760-11990  15  00:25 +04:47  48 257
+ -------------------------------------------------------------------------------
+
+History:
+  15-Jul-1996: Part 1 (cat. J/PASP/108/277) prepared by Paul Kuin (NASA/ADC)
+  30-Jan-2000: (Francois Ochsenbein, CDS): Merge of the two papers, from the
+     files prepared by Paul Kuin (NASA/ADC) and the TableF.txt file prepared
+     by Jon Fulbright (jfulb@ucolick.org)
+
+References:
+  Abrams, M.C., Davis, S.P., Rao, M.L.P., Engleman, Jr., R., and
+    Brault, J.W., 1994, ApJS, 93, 351 =1994ApJS...93..351A
+  Hertzberg, G. 1950, Molecular Spectra and Molecular Structure I.
+    Spectra of Diatomic Molecules (New York, Van Nostrand)
+================================================================================
+(End)                                     Francois Ochsenbein [CDS]  30-Jan-2000

@@ -1,7 +1,7 @@
 import re
 import numpy as np
 import pandas as pd
-from pfs.drp.stella.referenceLine import ReferenceLineSet, ReferenceLine, ReferenceLineStatus
+from pfs.drp.stella.referenceLine import ReferenceLineSet, ReferenceLine
 
 
 def referenceLineSetToDataFrame(refLineSet):
@@ -12,12 +12,14 @@ def referenceLineSetToDataFrame(refLineSet):
                 'description': rl.description,
                 'wavelength': rl.wavelength,
                 'intensity': rl.intensity,
-                'status': rl.status
+                'status': rl.status,
+                'transition': rl.transition,
+                'source': rl.source,
             })
     return pd.DataFrame(d)
 
 
-def toVacuum(lam_air):
+def toVacuum(lam_air_um):
     # Following taken from
     # https://pfspipe.ipmu.jp/jira/browse/PIPE2D-935
     # Originally from Jim Gunn, but quoted by N Caplar:
@@ -44,11 +46,11 @@ def toVacuum(lam_air):
     # + 0.001679/(57.362 - 1/lam^2) * (P/101325)*(288.15)/T
     # But setting the pressure and temp terms to unity.
     #
-    one_over_lambda_sq = 1/(lam_air*lam_air)
+    one_over_lambda_sq = 1/(lam_air_um*lam_air_um)
     n_minus_one = (0.057921/(238.0185 - one_over_lambda_sq)
                    + 0.001679/(57.362 - one_over_lambda_sq))
 
-    return lam_air * (1. + n_minus_one)
+    return lam_air_um * (1. + n_minus_one)
 
 
 def readLineList(filename, erin=True):
@@ -95,22 +97,27 @@ def readLineList(filename, erin=True):
     return wavelengthArr, intensityArr, speciesArr, statusArr
 
 
-def generateAirLineList(filename, outFile, lambdaNm=True, erin=True):
+def generateAirLineList(filename, outFile,
+                        infoFileName, lambdaNm=True,
+                        erin=True):
     wavelength_air, intensity, species, status = readLineList(filename,
                                                               erin=erin)
     linelist = []
-    for w, ii, sp, st in zip(wavelength_air, intensity, species, status):
+    with open(infoFileName, 'w') as infoFile:
+        infoFile.write("lambda_air[angstrom], lambda_vac[nm]\n")
+        infoFile.write("\n")
+        for w_air, ii, sp, st in zip(wavelength_air, intensity, species, status):
 
-        if lambdaNm is False:
-            # convert wavelengths from angstroms to nm
-            w_air = float(w)/10.0
-        else:
-            w_air = float(w)
+            if lambdaNm is False:
+                # convert wavelengths from angstroms to microns
+                w_air_micron = float(w_air)/10000.0
+            else:
+                w_air_micron = float(w_air)
 
-        w_vac = toVacuum(w_air)
-        print(f'w_air: {w_air} w_vac: {w_vac}')
-        refLine = ReferenceLine(sp, w_vac, ii, st)
-        linelist.append(refLine)
+            w_vac_nm = toVacuum(w_air_micron) * 1000.0
+            infoFile.write(f'{w_air:0.5f}, {w_vac_nm:0.5f}\n')
+            refLine = ReferenceLine(sp, w_vac_nm, ii, st)
+            linelist.append(refLine)
 
     lineListSorted = sorted(linelist, key=lambda refLine: refLine.wavelength)
 

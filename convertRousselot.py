@@ -35,8 +35,8 @@ def main():
     filename = 'Rousellot_list_v2.0.dat'
     fullfilename = os.path.join('data', 'Rousselot+2000', filename)
     print(f'Reading input file {fullfilename}...')
-    outfile = f'{filename}-out'
-    infofile = f'{filename}-info'
+    outfile = 'rousselot-linelist.csv'
+    infofile = 'rousselot-info.csv'
     convert(fullfilename, outfile, infofile)
 
 

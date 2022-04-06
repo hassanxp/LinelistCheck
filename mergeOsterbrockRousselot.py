@@ -51,15 +51,14 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
                 mergedList.append(ostRL)
                 ostIdx += 1
 
-
     mergedLineSet = ReferenceLineSet.fromRows(mergedList)
     mergedLineSet.writeLineList(outfile)
 
 
 def main():
-    rouFilename = 'Rousellot_list_v2.0.dat-out'
-    ostFilename = 'oh.dat-out'
-    outfile = f'{rouFilename}-merged'
+    rouFilename = 'rousselot-linelist.csv'
+    ostFilename = 'osterbrock-linelist.csv'
+    outfile = 'rousselot-osterbrock-merged-linelist.csv'
     merge(rouFilename, ostFilename, outfile)
 
 

@@ -5,6 +5,12 @@ from pfs.drp.stella.referenceLine import ReferenceLineStatus, ReferenceLineSourc
 
 
 def merge(rouFilename: str, ostFilename: str, outfile: str):
+
+    # If lines from the two catalogues are within this limit,
+    # they will be merged.
+    # separation = 0.0001
+    separation = 0.05
+
     rouRLS = ReferenceLineSet.fromLineList(rouFilename)
     ostRLS = ReferenceLineSet.fromLineList(ostFilename)
 
@@ -15,18 +21,20 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
 
     rouIdx = 0
     ostIdx = 0
+    mergedLines = 0
     while rouIdx < len(rouRLS) and ostIdx < len(ostRLS):
         rouRL = rouRLS[rouIdx]
         ostRL = ostRLS[ostIdx]
         print(f'Looking at Ost wavelength {ostRL.wavelength} and Rou wavelength {rouRL.wavelength}..')
 
-        if abs(ostRL.wavelength - rouRL.wavelength) < 0.0001:
+        if abs(ostRL.wavelength - rouRL.wavelength) < separation:
             print(f'    merging line w. Ost wavelength {ostRL.wavelength} and Rou wavelength {rouRL.wavelength})')
             rouRL.transition = ostRL.transition
             rouRL.source = ReferenceLineSource.ROUSSELOT2000EXT
             mergedList.append(rouRL)
             ostIdx += 1
             rouIdx += 1
+            mergedLines += 1
             continue
 
         if ostRL.wavelength < rouRL.wavelength:
@@ -53,11 +61,13 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
 
     mergedLineSet = ReferenceLineSet.fromRows(mergedList)
     mergedLineSet.writeLineList(outfile)
+    print(f'Number of merged lines: {mergedLines}.')
+    print(f'Output written to {outfile}.')
 
 
 def main():
-    rouFilename = 'rousselot-linelist.csv'
-    ostFilename = 'osterbrock-linelist.csv'
+    rouFilename = os.path.join('derived-data', 'rousselot-linelist.csv')
+    ostFilename = os.path.join('derived-data', 'osterbrock-linelist.csv')
     outfile = 'rousselot-osterbrock-merged-linelist.csv'
     merge(rouFilename, ostFilename, outfile)
 

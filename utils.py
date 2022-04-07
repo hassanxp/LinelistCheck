@@ -20,32 +20,44 @@ def referenceLineSetToDataFrame(refLineSet):
 
 
 def toVacuum(lam_air_um):
-    # Following taken from
-    # https://pfspipe.ipmu.jp/jira/browse/PIPE2D-935
-    # Originally from Jim Gunn, but quoted by N Caplar:
-    #
-    # The issue of the vacuum vs air wavelengths is complicated, not
-    # by the physics particularly, but by convention. A simple Sellmeier
-    # equation for the index is
-    # n-1 = 0.057921/(238.0185 - 1/lam^2) + 0.001679/(57.362 - 1/lam^2) * (P/101325)*(288.15)/T
-    # with the wavelength lam in microns, pressure in pascals, temeperature in
-    # Kelvin; if you set the pressure and temperature terms to unity,
-    # you get the index for 15C and the standard sea level pressure, at which I think
-    # the difference in vacuum and `air' wavelength is DEFINED, and this
-    # is what you want to use, I think, not the ACTUAL air wavelength, on MK,
-    # which is at 0.6 bar pressure and 0C. A very useful reference is the SDSS
-    # APOGEE one, which uses a different Sellmeier form with 5 constants
-    # instead of 4 (there is a constant term of about 7e-5),
-    # and with a nice discussion, is to be found at
-    # https://www.as.utexas.edu/~hebe/apogee/docs/air_vacuum.pdf,
-    # also attached.
-    #
-    # Using
-    #
-    # n-1 = 0.057921/(238.0185 - 1/lam^2)
-    # + 0.001679/(57.362 - 1/lam^2) * (P/101325)*(288.15)/T
-    # But setting the pressure and temp terms to unity.
-    #
+    """
+    Converts a wavelength measured in air to vacuum.
+
+    Following is taken from
+    https://pfspipe.ipmu.jp/jira/browse/PIPE2D-935
+    Originally from Jim Gunn, but quoted by N Caplar:
+
+    The issue of the vacuum vs air wavelengths is complicated, not
+    by the physics particularly, but by convention. A simple Sellmeier
+    equation for the index is
+    n-1 = 0.057921/(238.0185 - 1/lam^2) + 0.001679/(57.362 - 1/lam^2) * (P/101325)*(288.15)/T
+    with the wavelength lam in microns, pressure in pascals, temeperature in
+    Kelvin; if you set the pressure and temperature terms to unity,
+    you get the index for 15C and the standard sea level pressure, at which I think
+    the difference in vacuum and `air' wavelength is DEFINED, and this
+    is what you want to use, I think, not the ACTUAL air wavelength, on MK,
+    which is at 0.6 bar pressure and 0C. A very useful reference is the SDSS
+    APOGEE one, which uses a different Sellmeier form with 5 constants
+    instead of 4 (there is a constant term of about 7e-5),
+    and with a nice discussion, is to be found at
+    https://www.as.utexas.edu/~hebe/apogee/docs/air_vacuum.pdf,
+    also attached.
+
+    Using
+
+    n-1 = 0.057921/(238.0185 - 1/lam^2)
+    + 0.001679/(57.362 - 1/lam^2) * (P/101325)*(288.15)/T
+    But setting the pressure and temp terms to unity.
+
+    Parameters:
+        lam_air_um : `float`
+            The input wavelength, measured in air [micron]
+
+    Return:
+        lam_vac_um : `float`
+            The converted wavelength in vacuum [micron]
+    """
+
     one_over_lambda_sq = 1/(lam_air_um*lam_air_um)
     n_minus_one = (0.057921/(238.0185 - one_over_lambda_sq)
                    + 0.001679/(57.362 - one_over_lambda_sq))

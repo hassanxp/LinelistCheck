@@ -30,7 +30,7 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
         if abs(ostRL.wavelength - rouRL.wavelength) < separation:
             print(f'    merging line w. Ost wavelength {ostRL.wavelength} and Rou wavelength {rouRL.wavelength})')
             rouRL.transition = ostRL.transition
-            rouRL.source = ReferenceLineSource.ROUSSELOT2000EXT
+            rouRL.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
             mergedList.append(rouRL)
             ostIdx += 1
             rouIdx += 1
@@ -66,9 +66,9 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
 
 
 def main():
-    rouFilename = os.path.join('derived-data', 'rousselot-linelist.csv')
-    ostFilename = os.path.join('derived-data', 'osterbrock-linelist.csv')
-    outfile = 'rousselot-osterbrock-merged-linelist.csv'
+    rouFilename = os.path.join('derived-data', 'rousselot-linelist.txt')
+    ostFilename = os.path.join('derived-data', 'osterbrock-linelist.txt')
+    outfile = 'rousselot-osterbrock-merged-linelist.txt'
     merge(rouFilename, ostFilename, outfile)
 
 

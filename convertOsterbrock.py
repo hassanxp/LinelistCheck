@@ -36,8 +36,8 @@ def main():
     filename = 'oh.dat'
     fullfilename = os.path.join('data', 'Osterbrock+1997', filename)
     print(f'Reading input file {fullfilename}...')
-    outfile = 'osterbrock-linelist.csv'
-    infofile = 'osterbrock-info.csv'
+    outfile = 'osterbrock-linelist.txt'
+    infofile = 'osterbrock-info.txt'
     convert(fullfilename, outfile, infofile)
 
 

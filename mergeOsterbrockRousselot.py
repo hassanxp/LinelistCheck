@@ -14,7 +14,7 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
     rouRLS = ReferenceLineSet.fromLineList(rouFilename)
     ostRLS = ReferenceLineSet.fromLineList(ostFilename)
 
-    mergedList = []
+    mergedDict = {}
 
     rouRLS.sort()
     ostRLS.sort()
@@ -34,17 +34,23 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
         prevRouRL = rouRLS[prevRouIdx]
         prevOstRL = ostRLS[prevOstIdx]
 
-        if rouRL.intensity == prevRouRL.intensity and ostRL.transition != 'UNKNOWN' and prevOstRL.transition != 'UNKNOWN':
-            print(f'Looking at ROU lines w={rouRL.wavelength}, {prevRouRL.wavelength} and intensities {rouRL.intensity}, {rouRL.intensity}')
-            print(f'Looking at OST lines w={ostRL.wavelength}, {prevOstRL.wavelength} and transitions {ostRL.transition}, {rouRL.transition}')
+        if (rouRL.intensity == prevRouRL.intensity and
+            ostRL.transition != 'UNKNOWN' and
+            prevOstRL.transition != 'UNKNOWN' and
+            ostRL.transition[:6] == prevOstRL.transition[:6]):
+
+            print(f'Looking at ROU lines w={prevRouRL.wavelength}, {rouRL.wavelength} and intensities {prevRouRL.intensity}, {rouRL.intensity}')
+            print(f'           OST lines w={prevOstRL.wavelength}, {ostRL.wavelength} and transitions {prevOstRL.transition}, {ostRL.transition}')
             if abs(ostRL.wavelength - rouRL.wavelength) < separation:
-                print(f'    merging lines')
+                print(f'       merging lines')
                 prevRouRL.transition = prevOstRL.transition
                 rouRL.transition = ostRL.transition
                 prevRouRL.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
                 rouRL.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
-                mergedList.append(prevRouRL)
-                mergedList.append(rouRL)
+                mergedDict[prevRouRL.wavelength] = prevRouRL
+                mergedDict[rouRL.wavelength] = rouRL
+                if prevOstRL.wavelength in mergedDict.keys():
+                    mergedDict.pop(prevOstRL.wavelength)
                 prevOstIdx = ostIdx
                 ostIdx += 1
                 prevRouIdx = rouIdx
@@ -53,12 +59,12 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
                 continue
 
         if ostRL.wavelength < rouRL.wavelength:
-            mergedList.append(ostRL)
+            mergedDict[ostRL.wavelength] = ostRL
             prevOstIdx = ostIdx
             ostIdx += 1
             continue
 
-        mergedList.append(rouRL)
+        mergedDict[rouRL.wavelength] = rouRL
         prevRouIdx = rouIdx
         rouIdx += 1
 
@@ -67,16 +73,16 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
     if rouIdx < len(rouRLS):
         while rouIdx < len(rouRLS):
             rouRL = rouRLS[rouIdx]
-            mergedList.append(rouRL)
+            mergedDict[rouRL.wavelength] = rouRL
             rouIdx += 1
     else:
         if ostIdx < len(ostRLS):
             while ostIdx < len(ostRLS):
                 ostRL = ostRLS[ostIdx]
-                mergedList.append(ostRL)
+                mergedDict[ostRL.wavelength] = ostRL
                 ostIdx += 1
 
-    mergedLineSet = ReferenceLineSet.fromRows(mergedList)
+    mergedLineSet = ReferenceLineSet.fromRows(mergedDict.values())
     mergedLineSet.writeLineList(outfile)
     print(f'Number of merged lines: {mergedLines}.')
     print(f'Output written to {outfile}.')

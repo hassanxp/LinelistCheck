@@ -46,16 +46,25 @@ def process(filename: str, rouOstFile: str, outfile: str):
                     transitions = []
                     for ii in [0, 1]:
                         commentedRefLine = parse(commentedLines[ii])
-                        transition = rouOstDict[commentedRefLine.wavelength]
+                        rouOstLine = rouOstDict[commentedRefLine.wavelength]
+                        rouOstLine.status = ReferenceLineStatus.MERGED
+                        transition = rouOstLine.transition
                         transitions.append(transition)
                     refLine = parse(lineStripped)
                     refLine.transition = f'{transitions[0]}|{transitions[1]}'
                     refLine.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
-                    refLine.status = ReferenceLineStatus.MERGED
+                    refLine.status = ReferenceLineStatus.COMBINED
                     linelist.append(refLine)
             commentedLines = []
 
-        df = referenceLineSetToDataFrame(linelist)
+        # Added modified Rousselot-Osterbrock lines to linelist
+        for key, value in rouOstDict.items():
+            linelist.append(value)
+
+        lineListSorted = sorted(linelist,
+                                key=lambda refLine: refLine.wavelength)
+
+        df = referenceLineSetToDataFrame(lineListSorted)
         rls = ReferenceLineSet(df)
         print(f'Writing output to file {outfile}.')
         rls.writeLineList(outfile)

@@ -20,29 +20,46 @@ def merge(rouFilename: str, ostFilename: str, outfile: str):
     ostRLS.sort()
 
     rouIdx = 0
+    prevRouIdx = 0
     ostIdx = 0
+    prevOstIdx = 0
     mergedLines = 0
-    while rouIdx < len(rouRLS) and ostIdx < len(ostRLS):
+    while rouIdx < len(rouRLS)-1 and ostIdx < len(ostRLS)-1:
+
+        # Get PAIRS of lines from each catalog.
+        # From the Roussolet catalog, get two consecutive lines of the same intensity.
+        # From the Osterbrock catalog, get two consecutive lines of the same transition information (e or f).
         rouRL = rouRLS[rouIdx]
         ostRL = ostRLS[ostIdx]
-        print(f'Looking at Ost wavelength {ostRL.wavelength} and Rou wavelength {rouRL.wavelength}..')
+        prevRouRL = rouRLS[prevRouIdx]
+        prevOstRL = ostRLS[prevOstIdx]
 
-        if abs(ostRL.wavelength - rouRL.wavelength) < separation:
-            print(f'    merging line w. Ost wavelength {ostRL.wavelength} and Rou wavelength {rouRL.wavelength})')
-            rouRL.transition = ostRL.transition
-            rouRL.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
-            mergedList.append(rouRL)
-            ostIdx += 1
-            rouIdx += 1
-            mergedLines += 1
-            continue
+        if rouRL.intensity == prevRouRL.intensity and ostRL.transition != 'UNKNOWN' and prevOstRL.transition != 'UNKNOWN':
+            print(f'Looking at ROU lines w={rouRL.wavelength}, {prevRouRL.wavelength} and intensities {rouRL.intensity}, {rouRL.intensity}')
+            print(f'Looking at OST lines w={ostRL.wavelength}, {prevOstRL.wavelength} and transitions {ostRL.transition}, {rouRL.transition}')
+            if abs(ostRL.wavelength - rouRL.wavelength) < separation:
+                print(f'    merging lines')
+                prevRouRL.transition = prevOstRL.transition
+                rouRL.transition = ostRL.transition
+                prevRouRL.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
+                rouRL.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
+                mergedList.append(prevRouRL)
+                mergedList.append(rouRL)
+                prevOstIdx = ostIdx
+                ostIdx += 1
+                prevRouIdx = rouIdx
+                rouIdx += 1
+                mergedLines += 1
+                continue
 
         if ostRL.wavelength < rouRL.wavelength:
             mergedList.append(ostRL)
+            prevOstIdx = ostIdx
             ostIdx += 1
             continue
 
         mergedList.append(rouRL)
+        prevRouIdx = rouIdx
         rouIdx += 1
 
     # Complete list with remaining lines

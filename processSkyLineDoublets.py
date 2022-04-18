@@ -26,6 +26,8 @@ def process(filename: str, rouOstFile: str, outfile: str):
     with open(filename, 'r') as f:
         linelist = []
         commentedLines = []
+
+        print('Combining doublets..')
         for line in f:
 
             # Look for sequence consisting of:
@@ -63,6 +65,15 @@ def process(filename: str, rouOstFile: str, outfile: str):
 
         lineListSorted = sorted(linelist,
                                 key=lambda refLine: refLine.wavelength)
+
+        # Also mark lines that are too faint to be used
+        print('Flagging faint lines in full list...')
+        nFaintLines = 0
+        for line in lineListSorted:
+            if line.intensity < 0.1:
+                line.status = ReferenceLineStatus.NOT_VISIBLE
+                nFaintLines += 1
+        print(f'Flagged {nFaintLines} faint lines.')
 
         df = referenceLineSetToDataFrame(lineListSorted)
         rls = ReferenceLineSet(df)

@@ -63,17 +63,42 @@ def process(filename: str, rouOstFile: str, outfile: str):
         for key, value in rouOstDict.items():
             linelist.append(value)
 
-        lineListSorted = sorted(linelist,
+        # Combine additional lines that cause fitting issues
+        wavelengthData = [(771.71340, 771.90879, '9-4_R1f(1.5)|9-4_R1e(1.5)|9-4_R2e(2.5)|9-4_R2f(2.5)|9-4_R2e(3.5)|9-4_R2f(3.5)|9-4_R1e(4.5)|9-4_R1f(4.5)'),
+                          (792.3161, 792.33981, '5-1_Q1e(2.5)|5-1_Q1f(2.5)|9-4_P2e(5.5)|9-4_P2f(5.5)'),
+                          (876.36880, 876.41160, '7-3_R1f(3.5)|7-3_R1e(3.5)|7-3_R2e(3.5)|7-3_R2f(3.5)'),
+                          (967.09880, 967.1322, '8-4_P2e(6.5)|8-4_P2f(6.5)')]
+
+        linelistSorted = sorted(linelist,
                                 key=lambda refLine: refLine.wavelength)
 
-        # Also mark lines that are too faint to be used
-        print('Flagging faint lines in full list...')
+        for line in linelistSorted:
+            for wmin, wmax, _, in wavelengthData:
+                if line.wavelength >= wmin and line.wavelength <= wmax:
+                    line.status |= ReferenceLineStatus.MERGED
+
+        # Add replacement COMBINED lines for the above
+        for wmin, wmax, transition in wavelengthData:
+            linelistSorted.append(ReferenceLine(description='OH',
+                                  wavelength=0.5 * (wmin + wmax),
+                                  intensity=1.0,
+                                  status=ReferenceLineStatus.COMBINED,
+                                  transition=transition,
+                                  source=ReferenceLineSource.ROUSSELOT2000|ReferenceLineSource.OSTERBROCK97))
+
+        # Re-sort lines
+        lineListSorted = sorted(linelistSorted,
+                                key=lambda refLine: refLine.wavelength)
+
+        # Mark lines that are not visible (faint, out of PFS range) to be used
+        print('Flagging non-visible lines in full list...')
         nFaintLines = 0
         for line in lineListSorted:
-            if line.intensity < 0.1:
+            if line.intensity < 0.1 or line.wavelength < 630.00 or line.source == ReferenceLineSource.OSTERBROCK97:
                 line.status = ReferenceLineStatus.NOT_VISIBLE
                 nFaintLines += 1
-        print(f'Flagged {nFaintLines} faint lines.')
+
+        print(f'Flagged {nFaintLines} not visible lines.')
 
         df = referenceLineSetToDataFrame(lineListSorted)
         rls = ReferenceLineSet(df)

@@ -70,7 +70,11 @@ def process(filename: str, rouOstFile: str, outfile: str):
             lineDict[refLine.wavelength] = refLine
 
         # Combine additional lines that cause fitting issues
-        wavelengthData = [(682.93300, 683.18290, '7-2_R1f(3.5)|7-2_R1e(3.5)|7-2_R1f(4.5)|7-2_R1e(4.5)|7-2_R1f(2.5)|7-2_R1e(2.5)|7-2_R2e(3.5)|7-2_R2f(3.5)|7-2_R2e(2.5)|7-2_R2f(2.5)'),
+        # Note some strings are too long to fit into an afw.table when processing (limit 128 char).
+        # Using ellipsis to truncate.
+        wavelengthData = [
+                          # (682.93300, 683.18290, '7-2_R1f(3.5)|7-2_R1e(3.5)|7-2_R1f(4.5)|7-2_R1e(4.5)|7-2_R1f(2.5)|7-2_R1e(2.5)|7-2_R2e(3.5)|7-2_R2f(3.5)|7-2_R2e(2.5)|7-2_R2f(2.5)'),
+                          (682.93300, 683.18290, '7-2_R1f(3.5)|7-2_R1e(3.5)|...|7-2_R2f(3.5)|7-2_R2e(2.5)|7-2_R2f(2.5)'),
                           (724.68910, 724.86120, '8-3_R1f(1.5)|8-3_R1e(1.5)|8-3_R2e(1.5)|8-3_R2f(1.5)|8-3_R1e(5.5)|8-3_R1f(5.5)|8-3_R2e(4.5)|8-3_R2f(4.5)'),
                           (771.71340, 771.90879, '9-4_R1f(1.5)|9-4_R1e(1.5)|9-4_R2e(2.5)|9-4_R2f(2.5)|9-4_R2e(3.5)|9-4_R2f(3.5)|9-4_R1e(4.5)|9-4_R1f(4.5)'),
                           (785.41180, 785.58040, '5-1_R2e(3.5)|5-1_R2f(3.5)|9-4_P1e(4.5)|9-4_P1f(4.5)|5-1_R1f(3.5)|5-1_R1e(3.5)'),
@@ -80,6 +84,10 @@ def process(filename: str, rouOstFile: str, outfile: str):
                           (876.10960, 876.40523, '7-3_R1f(4.5)|7-3_R1e(4.5)|7-3_R1f(5.5)|7-3_R1e(5.5)|7-3_R1f(3.5)|7-3_R1e(3.5)|7-3_R2e(3.5)|7-3_R2f(3.5)'),
                           (947.93479, 948.20250, '8-4_P1e(3.5)|8-4_P1f(3.5)|UNKNOWN'),
                           (967.09880, 967.13220, '8-4_P2e(6.5)|8-4_P2f(6.5)')]
+
+        for idx, wD in enumerate(wavelengthData):
+            if len(wD[2]) >= 128:
+                print(f'warning: entry {idx} has a transition of length > 128 ({len(wD[2])})')
 
         linelist = sorted(lineDict.values(),
                           key=lambda refLine: refLine.wavelength)

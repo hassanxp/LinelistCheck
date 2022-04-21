@@ -1,5 +1,6 @@
 from distutils.command.build_scripts import first_line_re
 import os
+import wave
 from utils import toVacuum, referenceLineSetToDataFrame
 from pfs.drp.stella.referenceLine import ReferenceLineSet, ReferenceLine
 from pfs.drp.stella.referenceLine import ReferenceLineStatus, ReferenceLineSource
@@ -24,7 +25,7 @@ def process(filename: str, rouOstFile: str, outfile: str):
         rouOstDict[rl.wavelength] = rl
 
     with open(filename, 'r') as f:
-        linelist = []
+        lineDict = {}
         commentedLines = []
 
         print('Combining doublets..')
@@ -56,25 +57,34 @@ def process(filename: str, rouOstFile: str, outfile: str):
                     refLine.transition = f'{transitions[0]}|{transitions[1]}'
                     refLine.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
                     refLine.status = ReferenceLineStatus.COMBINED
-                    linelist.append(refLine)
+                    wavelength = refLine.wavelength
+                    if wavelength in lineDict:
+                        raise ValueError(f'Wavelength {wavelength} is already added.')
+                    lineDict[refLine.wavelength] = refLine
             commentedLines = []
 
-        # Added modified Rousselot-Osterbrock lines to linelist
-        for key, value in rouOstDict.items():
-            linelist.append(value)
+        # Add MERGED Rousselot-Osterbrock lines to linelist
+        for refLine in rouOstDict.values():
+            if refLine.wavelength in lineDict:
+                print(f'WARNING: Wavelength {refLine.wavelength} is already added. Skipping MERGED line')
+            lineDict[refLine.wavelength] = refLine
 
         # Combine additional lines that cause fitting issues
-        wavelengthData = [(771.71340, 771.90879, '9-4_R1f(1.5)|9-4_R1e(1.5)|9-4_R2e(2.5)|9-4_R2f(2.5)|9-4_R2e(3.5)|9-4_R2f(3.5)|9-4_R1e(4.5)|9-4_R1f(4.5)'),
-                          (792.3161, 792.33981, '5-1_Q1e(2.5)|5-1_Q1f(2.5)|9-4_P2e(5.5)|9-4_P2f(5.5)'),
-                          (876.36880, 876.89330, '7-3_R1f(3.5)|7-3_R1e(3.5)|7-3_R2e(3.5)|7-3_R2f(3.5)|7-3_R2e(2.5)|7-3_R2f(2.5)'),
-                          (967.09880, 967.1322, '8-4_P2e(6.5)|8-4_P2f(6.5)')]
+        wavelengthData = [(682.93300, 683.18290, '7-2_R1f(3.5)|7-2_R1e(3.5)|7-2_R1f(4.5)|7-2_R1e(4.5)|7-2_R1f(2.5)|7-2_R1e(2.5)|7-2_R2e(3.5)|7-2_R2f(3.5)|7-2_R2e(2.5)|7-2_R2f(2.5)'),
+                          (724.68910, 724.86120, '8-3_R1f(1.5)|8-3_R1e(1.5)|8-3_R2e(1.5)|8-3_R2f(1.5)|8-3_R1e(5.5)|8-3_R1f(5.5)|8-3_R2e(4.5)|8-3_R2f(4.5)'),
+                          (771.71340, 771.90879, '9-4_R1f(1.5)|9-4_R1e(1.5)|9-4_R2e(2.5)|9-4_R2f(2.5)|9-4_R2e(3.5)|9-4_R2f(3.5)|9-4_R1e(4.5)|9-4_R1f(4.5)'),
+                          (785.41180, 785.58040, '5-1_R2e(3.5)|5-1_R2f(3.5)|9-4_P1e(4.5)|9-4_P1f(4.5)|5-1_R1f(3.5)|5-1_R1e(3.5)'),
+                          (792.31610, 792.33981, '5-1_Q1e(2.5)|5-1_Q1f(2.5)|9-4_P2e(5.5)|9-4_P2f(5.5)'),
+                          (828.49380, 828.54940, '6-2_R1e(6.5)|6-2_R1f(6.5)|6-2_R2e(5.5)|6-2_R2f(5.5)'),
+                          (876.10960, 876.89330, '7-3_R1f(4.5)|7-3_R1e(4.5)|7-3_R1f(5.5)|7-3_R1e(5.5)|7-3_R1f(3.5)|7-3_R1e(3.5)|7-3_R1f(3.5)|7-3_R1e(3.5)|7-3_R2e(3.5)|7-3_R2f(3.5)|7-3_R2e(2.5)|7-3_R2f(2.5)'),
+                          (947.93479, 948.20250, '8-4_P1e(3.5)|8-4_P1f(3.5)|UNKNOWN'),
+                          (967.09880, 967.13220, '8-4_P2e(6.5)|8-4_P2f(6.5)')]
 
-        linelist = sorted(linelist,
+        linelist = sorted(lineDict.values(),
                           key=lambda refLine: refLine.wavelength)
 
         for line in linelist:
             wavelength = line.wavelength
-            print(f'wavelength={wavelength}')
             for wmin, wmax, _, in wavelengthData:
                 if wavelength >= wmin and wavelength <= wmax:
                     print(f'Assigning wavelength {wavelength} as MERGED')
@@ -102,6 +112,14 @@ def process(filename: str, rouOstFile: str, outfile: str):
                 nFaintLines += 1
 
         print(f'Flagged {nFaintLines} not visible lines.')
+
+        print('Checking for any duplicates in wavelength..')
+        wavelengthDict = {}
+        for line in linelist:
+            wavelength = line.wavelength
+            if wavelength in wavelengthDict:
+                print(f'Wavelength {wavelength} is already added.')
+            wavelengthDict[wavelength] = line
 
         df = referenceLineSetToDataFrame(linelist)
         rls = ReferenceLineSet(df)

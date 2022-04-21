@@ -1,0 +1,26 @@
+# Columns:
+# 1: wavelength (nm)
+# 2: intensity (arbitrary units)
+# 3: description (ionic species)
+# 4: status (bitmask)
+# 5: transition
+# 6: source reference
+#
+# Status bitmask elements:
+# GOOD=0: Line is good
+# NOT_VISIBLE=1: Line is not typically visible in PFS (maybe too faint)
+# BLEND=2: Line is blended with other line(s)
+# SUSPECT=4: Line is of suspect quality
+# REJECTED=8: Line has been rejected from use in PFS
+# BROAD=16: Line is broader than normal
+# DETECTORMAP_USED=32: Used for fitting detectorMap
+# DETECTORMAP_RESERVED=64: Reserved during fitting detectorMap
+# SKYSUB_USED=128: Used for 2d sky subtraction
+# MERGED=256: Line has been merged into another
+# COMBINED=512: Line created from MERGED lines
+#
+557.88870          100.00    OI           0 None      0
+589.15832          800.00    NaI          0 None      0
+589.75581          400.00    NaI          0 None      0
+630.20460           10.00    OI           0 None      0
+636.55360           10.00    OI           0 None      0

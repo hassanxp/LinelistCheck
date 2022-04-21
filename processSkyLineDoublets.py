@@ -17,7 +17,7 @@ def parse(line: str) -> ReferenceLine:
                          source=None)
 
 
-def process(filename: str, rouOstFile: str, outfile: str):
+def process(filename: str, rouOstFile: str, nonOHFile: str, outfile: str):
 
     rouOstLineList = ReferenceLineSet.fromLineList(rouOstFile)
     rouOstDict = {}
@@ -125,6 +125,13 @@ def process(filename: str, rouOstFile: str, outfile: str):
                                           transition=transition,
                                           source=ReferenceLineSource.ROUSSELOT2000|ReferenceLineSource.OSTERBROCK97))
 
+        # Add non-OH lines. These are from the old-style linelist, so need to add source and transition info
+        nonOHLineList = ReferenceLineSet.fromLineList(nonOHFile)
+        for rl in nonOHLineList:
+            rl.source = ReferenceLineSource.NIST
+            rl.transition = 'UNKNOWN'
+            linelist.append(rl)
+
         # Re-sort lines
         linelist = sorted(linelist,
                           key=lambda refLine: refLine.wavelength)
@@ -156,12 +163,13 @@ def process(filename: str, rouOstFile: str, outfile: str):
 def main():
     inputfilename = os.path.join('derived-data', 'skyLines-1fc7b67.txt')
     rouOstFileName = os.path.join('derived-data', 'rousselot-osterbrock-merged-linelist.txt')
+    nonOHfile = os.path.join('derived-data', 'nonOHlines.txt')
 
     print(f'Reading input file {inputfilename}...')
     print(f'Reading file {rouOstFileName} for orig Rousselot Osterbrock info...')
 
     outfile = 'skyLine_mergedDoublets.txt'
-    process(inputfilename, rouOstFileName, outfile)
+    process(inputfilename, rouOstFileName, nonOHfile, outfile)
 
 
 if __name__ == "__main__":

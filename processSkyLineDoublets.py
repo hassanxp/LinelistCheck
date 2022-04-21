@@ -125,11 +125,9 @@ def process(filename: str, rouOstFile: str, nonOHFile: str, outfile: str):
                                           transition=transition,
                                           source=ReferenceLineSource.ROUSSELOT2000|ReferenceLineSource.OSTERBROCK97))
 
-        # Add non-OH lines. These are from the old-style linelist, so need to add source and transition info
+        # Add non-OH lines.
         nonOHLineList = ReferenceLineSet.fromLineList(nonOHFile)
         for rl in nonOHLineList:
-            rl.source = ReferenceLineSource.NIST
-            rl.transition = 'UNKNOWN'
             linelist.append(rl)
 
         # Re-sort lines

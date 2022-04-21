@@ -19,8 +19,9 @@
 # MERGED=256: Line has been merged into another
 # COMBINED=512: Line created from MERGED lines
 #
-557.88870          100.00    OI           0 None      0
-589.15832          800.00    NaI          0 None      0
-589.75581          400.00    NaI          0 None      0
-630.20460           10.00    OI           0 None      0
-636.55360           10.00    OI           0 None      0
+557.88870          100.00    OI           0 UNKNOWN      2
+589.15832          800.00    NaI          0 UNKNOWN      2
+589.75581          400.00    NaI          0 UNKNOWN      2
+630.20460           10.00    OI           0 UNKNOWN      2
+636.55360           10.00    OI           0 UNKNOWN      2
+656.46000            0.10    HI           0 UNKNOWN      2

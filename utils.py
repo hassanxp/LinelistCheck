@@ -13,8 +13,8 @@ def referenceLineSetToDataFrame(refLineSet):
                 'wavelength': rl.wavelength,
                 'intensity': rl.intensity,
                 'status': rl.status,
-                'transition': rl.transition,
-                'source': rl.source,
+                # 'transition': rl.transition,
+                # 'source': rl.source,
             })
     return pd.DataFrame(d)
 
@@ -116,18 +116,23 @@ def generateAirLineList(filename, outFile,
                                                               erin=erin)
     linelist = []
     with open(infoFileName, 'w') as infoFile:
-        infoFile.write("lambda_air[angstrom], lambda_vac[nm]\n")
+        if lambdaNm is False:
+            infoFile.write("lambda_air[angstrom], lambda_vac[nm]\n")
+        else:
+            infoFile.write("lambda_air[nm], lambda_vac[nm]\n")
+
         infoFile.write("\n")
         for w_air, ii, sp, st in zip(wavelength_air, intensity, species, status):
 
             if lambdaNm is False:
-                # convert wavelengths from angstroms to microns
+                # convert wavelengths from angstrom to microns
                 w_air_micron = float(w_air)/10000.0
             else:
-                w_air_micron = float(w_air)
+                # convert wavelengths from nm to microns
+                w_air_micron = float(w_air)/1000.00
 
             w_vac_nm = toVacuum(w_air_micron) * 1000.0
-            infoFile.write(f'{w_air:0.5f}, {w_vac_nm:0.5f}\n')
+            infoFile.write(f'{w_air}, {w_vac_nm}\n')
             refLine = ReferenceLine(sp, w_vac_nm, ii, st)
             linelist.append(refLine)
 

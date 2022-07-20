@@ -138,7 +138,8 @@ def process(filename: str, rouOstFile: str, nonOHFile: str, outfile: str):
         print('Flagging non-visible lines in full list...')
         nFaintLines = 0
         for line in linelist:
-            if line.intensity < 0.1 or line.wavelength < 630.00 or line.source == ReferenceLineSource.OSTERBROCK97:
+            # if line.intensity < 0.1 or line.wavelength < 630.00 or line.source == ReferenceLineSource.OSTERBROCK97:
+            if line.intensity < 0.1:
                 line.status |= ReferenceLineStatus.NOT_VISIBLE
                 nFaintLines += 1
 

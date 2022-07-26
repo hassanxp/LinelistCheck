@@ -161,7 +161,7 @@ def process(filename: str, rouOstFile: str, nonOHFile: str, outfile: str):
 
 def main():
     inputfilename = os.path.join('derived-data', 'skyLines-1fc7b67.txt')
-    rouOstFileName = os.path.join('derived-data', 'rousselot-osterbrock-merged-linelist.txt')
+    rouOstFileName = os.path.join('derived-data', 'rousselot-osterbrock-combined.txt')
     nonOHfile = os.path.join('derived-data', 'nonOHlines.txt')
 
     print(f'Reading input file {inputfilename}...')

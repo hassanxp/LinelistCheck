@@ -13,8 +13,8 @@ def referenceLineSetToDataFrame(refLineSet):
                 'wavelength': rl.wavelength,
                 'intensity': rl.intensity,
                 'status': rl.status,
-                # 'transition': rl.transition,
-                # 'source': rl.source,
+                'transition': rl.transition,
+                'source': rl.source,
             })
     return pd.DataFrame(d)
 

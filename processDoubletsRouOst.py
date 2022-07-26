@@ -15,28 +15,38 @@ def combineDoublesFromRouOst(rouOstFile, outfile, tolerance=0.5):
                                   key=lambda refLine: refLine.wavelength)
 
     prev = None
-    for line in rouOstLineListSorted:
+    for roLine in rouOstLineListSorted:
         if prev is not None:
-            if line.description == prev.description and abs(line.wavelength - prev.wavelength) < tolerance:
+            if roLine.description == prev.description and abs(roLine.wavelength - prev.wavelength) < tolerance:
                 # combine lines
                 transitions = []
-                for ll in [prev, line]:
+                for ll in [prev, roLine]:
                     ll.status |= ReferenceLineStatus.MERGED
                     transitions.append(ll.transition)
-                wavelength = (prev.wavelength + line.wavelength)/2.0
-                intensity = (prev.intensity + line.intensity)/2.0
-                combinedLine = ReferenceLine(line.description, wavelength,
+                wavelength = (prev.wavelength + roLine.wavelength)/2.0
+                intensity = (prev.intensity + roLine.intensity)/2.0
+                transition = f'{transitions[0]}|{transitions[1]}'
+                source = prev.source | roLine.source
+                status = ReferenceLineStatus.COMBINED
+                combinedLine = ReferenceLine(roLine.description, wavelength,
                                              intensity,
-                                             ReferenceLineStatus.GOOD)
-                combinedLine.transition = f'{transitions[0]}|{transitions[1]}'
-                combinedLine.source = ReferenceLineSource.ROUSSELOT2000 | ReferenceLineSource.OSTERBROCK97
-                combinedLine.status = ReferenceLineStatus.COMBINED
+                                             status,
+                                             transition,
+                                             source)
                 if wavelength in rouOstDict:
                     raise ValueError(f'Wavelength {wavelength} is already added.')
+
+                # Add new combined line AND original lines (which have been marked as MERGED)
+                # These will be removed if necessary later.
+                rouOstDict[prev.wavelength] = prev
+                rouOstDict[roLine.wavelength] = roLine
                 rouOstDict[wavelength] = combinedLine
+
+                prev = None
+                continue
             else:
                 rouOstDict[prev.wavelength] = prev
-        prev = line
+        prev = roLine
 
     linelist = sorted(rouOstDict.values(),
                       key=lambda refLine: refLine.wavelength)
@@ -49,12 +59,10 @@ def combineDoublesFromRouOst(rouOstFile, outfile, tolerance=0.5):
 
 def main():
     rouOstFileName = os.path.join('derived-data', 'rousselot-osterbrock-merged-linelist.txt')
+    # rouOstFileName = 'rousselot-osterbrock-test.txt'
     outfile = 'rousselot-osterbrock-combined.txt'
 
-    print(f'Reading input file {inputfilename}...')
     print(f'Reading file {rouOstFileName} for orig Rousselot Osterbrock info...')
-
-    outfile = 'skyLine_mergedDoublets.txt'
     combineDoublesFromRouOst(rouOstFileName, outfile)
 
 

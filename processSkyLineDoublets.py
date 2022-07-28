@@ -153,7 +153,13 @@ def process(filename: str, rouOstFile: str, nonOHFile: str, outfile: str):
                 print(f'Wavelength {wavelength} is already added.')
             wavelengthDict[wavelength] = line
 
-        df = referenceLineSetToDataFrame(linelist)
+        # Remove all lines marked as MERGED temporarily until DRP updated to support these
+        filteredLineList = []
+        for line in linelist:
+            if line.status & ReferenceLineStatus.MERGED == 0:
+                filteredLineList.append(line)
+
+        df = referenceLineSetToDataFrame(filteredLineList)
         rls = ReferenceLineSet(df)
         print(f'Writing output to file {outfile}.')
         rls.writeLineList(outfile)

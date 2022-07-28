@@ -1,12 +1,12 @@
 import os
-
+from statistics import mean
 from pfs.drp.stella.referenceLine import ReferenceLineSet, ReferenceLine
 from pfs.drp.stella.referenceLine import ReferenceLineStatus, ReferenceLineSource
 
 from utils import referenceLineSetToDataFrame
 
 
-def combineDoublesFromRouOst(rouOstFile, outfile, tolerance=0.5):
+def combineDoublesFromRouOst(rouOstFile, outfile, separation=0.35):
     """Combine close doublets from rousselot-osterbrock linelist
     """
     rouOstDict = {}
@@ -14,39 +14,25 @@ def combineDoublesFromRouOst(rouOstFile, outfile, tolerance=0.5):
     rouOstLineListSorted = sorted(rouOstLineList,
                                   key=lambda refLine: refLine.wavelength)
 
-    prev = None
+    groupedLines = []
+    # Marker for first line in wavelength for group
+    start = None
     for roLine in rouOstLineListSorted:
-        if prev is not None:
-            if roLine.description == prev.description and abs(roLine.wavelength - prev.wavelength) < tolerance:
-                # combine lines
-                transitions = []
-                for ll in [prev, roLine]:
-                    ll.status |= ReferenceLineStatus.MERGED
-                    transitions.append(ll.transition)
-                wavelength = (prev.wavelength + roLine.wavelength)/2.0
-                intensity = (prev.intensity + roLine.intensity)/2.0
-                transition = f'{transitions[0]}|{transitions[1]}'
-                source = prev.source | roLine.source
-                status = ReferenceLineStatus.COMBINED
-                combinedLine = ReferenceLine(roLine.description, wavelength,
-                                             intensity,
-                                             status,
-                                             transition,
-                                             source)
-                if wavelength in rouOstDict:
-                    raise ValueError(f'Wavelength {wavelength} is already added.')
-
-                # Add new combined line AND original lines (which have been marked as MERGED)
-                # These will be removed if necessary later.
-                rouOstDict[prev.wavelength] = prev
-                rouOstDict[roLine.wavelength] = roLine
-                rouOstDict[wavelength] = combinedLine
-
-                prev = None
-                continue
-            else:
-                rouOstDict[prev.wavelength] = prev
-        prev = roLine
+        if start is None:
+            start = roLine
+            continue
+        if (roLine.description == start.description and
+           abs(roLine.wavelength - start.wavelength) < separation):
+            groupedLines.append(roLine)
+            continue
+        if len(groupedLines) == 0:
+            # Just write start line to output as uncombined line
+            rouOstDict[start.wavelength] = start
+        else:
+            groupedLines.append(start)
+            combineLines(groupedLines, rouOstDict)
+            groupedLines = []
+        start = None
 
     linelist = sorted(rouOstDict.values(),
                       key=lambda refLine: refLine.wavelength)
@@ -55,6 +41,54 @@ def combineDoublesFromRouOst(rouOstFile, outfile, tolerance=0.5):
     rls = ReferenceLineSet(df)
     print(f'Writing output to file {outfile}.')
     rls.writeLineList(outfile)
+
+
+def combineLines(groupedLines, rouOstDict, transition_str_limit=128):
+    if len(groupedLines) == 0:
+        raise ValueError('Line group is unexpectedly empty.')
+
+    # Limit to the allowed length in butler registry of transition string
+    transitionStr = ""
+    truncated = False
+    wavelengths = []
+    intensities = []
+    source = ReferenceLineSource.NONE
+    for ll in groupedLines:
+        ll.status |= ReferenceLineStatus.MERGED
+        # Add original lines (which have been marked as MERGED)
+        # These will be removed if necessary later.
+        rouOstDict[ll.wavelength] = ll
+        wavelengths.append(ll.wavelength)
+        intensities.append(ll.intensity)
+        source |= ll.source
+        if truncated is True:
+            continue
+        if (len(transitionStr) + len(ll.transition)) > (transition_str_limit-4):
+            transitionStr += '|...'
+            truncated = True
+            continue
+        if len(transitionStr) != 0:
+            transitionStr += '|'
+        transitionStr += ll.transition
+
+    wavelength = mean(wavelengths)
+    intensity = mean(intensities)
+
+    status = ReferenceLineStatus.COMBINED
+    combinedLine = ReferenceLine(groupedLines[0].description,
+                                 wavelength,
+                                 intensity,
+                                 status,
+                                 transitionStr,
+                                 source)
+    if wavelength in rouOstDict:
+        # Add a tiny, otherwise insignificant, value to avoid clashes with other lines
+        wavelength += 1e-13
+        # Check again
+        if wavelength in rouOstDict:
+            raise ValueError(f'Line with (adjusted) wavelength {wavelength} already in dict')
+        combinedLine.wavelength = wavelength
+    rouOstDict[wavelength] = combinedLine
 
 
 def main():

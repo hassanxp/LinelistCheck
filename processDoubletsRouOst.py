@@ -44,6 +44,13 @@ def combineDoublesFromRouOst(rouOstFile, outfile, separation=0.35):
 
 
 def combineLines(groupedLines, rouOstDict, transition_str_limit=128):
+    """Combine grouped lines into a single line.
+    The combined line is flagged as COMBINED.
+    The input lines are retained, with flag MERGED.
+
+    Note applying limit to transition strings as
+    some strings are too long to fit into an afw.table when processing (limit 128 char).
+    """
     if len(groupedLines) == 0:
         raise ValueError('Line group is unexpectedly empty.')
 

@@ -24,7 +24,8 @@ def process(prevSkyLineName: str, rouOstFile: str, nonOHFile: str, outfile: str)
     for rl in rouOstLineList:
         rouOstDict[rl.wavelength] = rl
 
-    lineDict = processPrevSkyLine(prevSkyLineName, rouOstDict)
+    # lineDict = processPrevSkyLine(prevSkyLineName, rouOstDict)
+    lineDict = {}
 
     # Add MERGED Rousselot-Osterbrock lines to linelist
     for refLine in rouOstDict.values():
@@ -35,7 +36,7 @@ def process(prevSkyLineName: str, rouOstFile: str, nonOHFile: str, outfile: str)
     linelist = sorted(lineDict.values(),
                       key=lambda refLine: refLine.wavelength)
 
-    linelist = combineExplicitGroups(linelist)
+    # linelist = combineExplicitGroups(linelist)
 
     # Add non-OH lines.
     nonOHLineList = ReferenceLineSet.fromLineList(nonOHFile)

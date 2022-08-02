@@ -1,7 +1,8 @@
 import os
 from utils import toVacuum, referenceLineSetToDataFrame
 from pfs.drp.stella.referenceLine import ReferenceLineSet, ReferenceLine
-from pfs.drp.stella.referenceLine import ReferenceLineStatus, ReferenceLineSource
+from pfs.drp.stella.referenceLine import ReferenceLineStatus
+from pfs.drp.stella.referenceLine import ReferenceLineSource
 
 
 def convert(filename: str, outfile: str, infofile: str):

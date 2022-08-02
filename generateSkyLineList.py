@@ -201,7 +201,7 @@ def main():
     print(f'Reading file {rouOstFileName} '
           'for orig Rousselot Osterbrock info...')
 
-    outfile = 'skyLine_updated.txt'
+    outfile = 'skyLines_updated.txt'
     process(inputfilename, rouOstFileName, nonOHfile, outfile)
 
 

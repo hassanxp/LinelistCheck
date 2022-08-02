@@ -50,11 +50,11 @@ def process(prevSkyLineName: str, rouOstFile: str, nonOHFile: str, outfile: str)
     # Mark lines that are not visible (faint, out of PFS range) to be used
     print('Flagging non-visible lines in full list...')
     nFaintLines = 0
-    for line in linelist:
-        # if line.intensity < 0.1 or line.wavelength < 630.00 or line.source == ReferenceLineSource.OSTERBROCK97:
-        if line.intensity < 0.1:
-            line.status |= ReferenceLineStatus.NOT_VISIBLE
-            nFaintLines += 1
+    # for line in linelist:
+    #     # if line.intensity < 0.1 or line.wavelength < 630.00 or line.source == ReferenceLineSource.OSTERBROCK97:
+    #     if line.intensity < 0.1:
+    #         line.status |= ReferenceLineStatus.NOT_VISIBLE
+    #         nFaintLines += 1
 
     print(f'Flagged {nFaintLines} not visible lines.')
 
@@ -66,8 +66,9 @@ def process(prevSkyLineName: str, rouOstFile: str, nonOHFile: str, outfile: str)
     for line in linelist:
         if line.status & ReferenceLineStatus.MERGED == 0:
             filteredLineList.append(line)
+    lineList = filteredLineList
 
-    df = referenceLineSetToDataFrame(filteredLineList)
+    df = referenceLineSetToDataFrame(lineList)
     rls = ReferenceLineSet(df)
     print(f'Writing output to file {outfile}.')
     rls.writeLineList(outfile)

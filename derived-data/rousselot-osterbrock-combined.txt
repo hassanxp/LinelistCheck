@@ -25,6 +25,7 @@
 # NIST=2: Lines taken from NIST
 # OSTERBROCK97=4: Osterbrock+1996 (1996PASP..108..277O) and Osterbrock+1997 (1997PASP..109..614O)
 # ROUSSELOT2000=8: Rousselot+2000 (2000A&A...354.1134R)
+# SDSS=16: Lines taken from SDSS (https://www.sdss.org/dr14/spectro/spectro_basics)
 #
 520.44149            1.00    OH         256 9-2_Q1f(1.5)   4
 520.44239            1.00    OH         512 9-2_Q1e(1.5)|9-2_Q1f(1.5)   4
